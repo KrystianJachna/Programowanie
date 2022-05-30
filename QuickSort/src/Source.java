@@ -52,6 +52,7 @@ class Stack {
 
 public class Source {
     public static Scanner sc = new Scanner(System.in);
+    //public static int arr[] = {1, 10, 9, 5, 4 ,2 ,3, 7, 6, 8};
    /*public static int arr[] = {65, 108, 48, 36, 247, 234, 241, 270, 140,
             77, 16, 91, 97, 182, 109, 199, 160, 258, 218, 92, 181, 293,
             183, 46, 244, 265, 68, 223, 233, 124, 141, 197, 230, 123, 271,
@@ -90,6 +91,50 @@ public class Source {
     public static int findPiv() {
         for (int i = 0; i < arr.length; ++i) {
             if (arr[i] < 0)
+                return i;
+        }
+        return arr.length - 1;
+    }
+
+    public static void QuickSortNoDups(int L, int R) {
+        int pivNumber = 0;
+
+        while (L < R || pivNumber > 0) {
+            if (L < R) {
+                int q = PartitionHoare(L, R);
+                markPiv(q, L, R);
+                ++pivNumber;
+                R = q - 1;
+            }
+            else {
+                L = R + 2;
+                R = findPivMark(L);
+                arr[R] = -arr[R];
+                --pivNumber;
+            }
+        }
+    }
+
+    public static void markPiv(int pivotIndex,int L, int R) {
+        int maxIndex = L;
+        int maxValue = arr[L];
+
+        for (int i = L; i < pivotIndex; ++i) {
+            if (arr[i] > maxValue) {
+                maxValue = arr[i];
+                maxIndex = arr[i];
+            }
+        }
+
+        int tmp = arr[maxIndex];
+        arr[maxIndex] = arr[pivotIndex - 1];
+        arr[pivotIndex] = arr[R];
+        arr[R] = tmp;
+    }
+
+    public static int findPivMark(int Lp) {
+        for (int i = Lp + 1; i < arr.length; ++i) {
+            if (arr[i] < arr[Lp])
                 return i;
         }
         return arr.length - 1;
