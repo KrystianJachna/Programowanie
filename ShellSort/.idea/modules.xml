@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/QuickSortIteracyjnie.iml" filepath="$PROJECT_DIR$/QuickSortIteracyjnie.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ShellSort.iml" filepath="$PROJECT_DIR$/ShellSort.iml" />
     </modules>
   </component>
 </project>
