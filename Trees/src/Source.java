@@ -1,11 +1,11 @@
 // Drzewa
-
+import java.util.Scanner;
 class Node {
-    public int info;
+    public char info;
     public Node left;
     public Node right;
 
-    public Node(int info) {
+    public Node(char info) {
         this.info = info;
         this.left = this.right = null;
     }
@@ -46,10 +46,10 @@ class Stack {
     }
 }
 
-class BST {
-    private Node root;
+class BinaryTree {
+    public Node root;
 
-    public BST() {root = null;}
+    public BinaryTree() {root = null;}
 
     public Node getRoot(){ return root;}
 
@@ -114,23 +114,36 @@ class BST {
             return;
         Stack S = new Stack();
 
-        Node root = this.root;
-
-        // do poprawy po na poczatku jest przeciewz pusty
+        Node current = this.root;
+        Node prev = null;
+        S.push(root);
 
         while(!S.isEmpty()) {
-            while(root != null) {
-                S.push(root.right);
-                S.push(root);
-                root = root.left;
-            }
-            root = S.pop();
+            current = S.getTop();
 
-            if (root != null && root.right == S.getTop()) {
-                S.pop();
-                S.push(root);
-                root = S.getTop().right;
+            if (prev == null || prev.left == current || prev.right == current) {
+                if (current.left != null)
+                    S.push(current.left);
+                else if (current.right != null)
+                    S.push(current.right);
+                else {
+                    S.pop();
+                    System.out.print(current.info + " ");
+                }
             }
+            else if (current.left == prev) {
+                if (current.right != null)
+                    S.push(current.right);
+                else {
+                    S.pop();
+                    System.out.print(current.info + " ");
+                }
+            }
+            else if (current.right == prev) {
+                S.pop();
+                System.out.print(current.info + " ");
+            }
+            prev = current;
         }
     }
 
@@ -139,13 +152,49 @@ class BST {
             displayTree(p.right, ++h);
 
             for (int i = 0; i < h; ++i)
-                System.out.print(" ");
+                System.out.print("  ");
             System.out.println(p.info);
 
-            displayTree(p.left, ++h);
+            displayTree(p.left, h);
         }
     }
 }
 
 public class Source {
+    public static Scanner sc = new Scanner(System.in);
+    public static void main(String [] args) {
+        BinaryTree tree = new BinaryTree();
+        tree.root = new Node('a');
+        tree.root.left = new Node('b');
+        tree.root.left.left = new Node('d');
+        tree.root.right = new Node('c');
+        tree.root.right.right = new Node('f');
+        tree.root.right.left = new Node('e');
+        tree.root.right.left.right = new Node('g');
+        tree.root.right.right.right = new Node('i');
+        tree.root.right.right.left = new Node('h');
+
+        tree.displayTree(tree.root, 1);
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
+        tree.preorder(tree.root);
+        System.out.println();
+        tree.preoderStack();
+        System.out.println();
+        System.out.println();
+
+        tree.inorder(tree.root);
+        System.out.println();
+        tree.inorderStack();
+        System.out.println();
+        System.out.println();
+
+        tree.postorder(tree.root);
+        System.out.println();
+        tree.postorderStack();
+        System.out.println();
+        System.out.println();
+    }
 }
