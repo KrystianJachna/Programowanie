@@ -1,6 +1,7 @@
 // Drzewa
 import java.util.Random;
 import java.util.Scanner;
+
 class Node {
     public char info;
     public Node left;
@@ -49,8 +50,10 @@ class Stack {
 
 class BinaryTree {
     public Node root;
+    private int preorderIndex;
 
-    public BinaryTree() {root = null;}
+
+    public BinaryTree() {root = null; preorderIndex = 0;}
 
     public Node getRoot(){ return root;}
 
@@ -182,10 +185,44 @@ class BinaryTree {
                 insert(ch, p.left, p, false);
         }
     }
+
+    public void constrctTreePP(char [] preorderArr, char [] postorderArr) {
+        this.root = constructTreePostPree(preorderArr, postorderArr, 0, postorderArr.length - 1);
+        preorderIndex = 0;
+    }
+
+    private Node constructTreePostPree(char [] preorderArr, char [] postorderArr, int postStart, int postEnd) {
+         if (postStart > postEnd)
+             return null;
+
+         Node node = new Node(preorderArr[preorderIndex]);
+         ++preorderIndex;
+
+         if(postStart == postEnd)
+             return node;
+
+         int postorderIndex = searchForIndex(postorderArr, preorderArr[preorderIndex]);
+         node.left = constructTreePostPree(preorderArr, postorderArr, postStart, postorderIndex);
+         node.right = constructTreePostPree(preorderArr, postorderArr, postorderIndex + 1, postEnd - 1);
+         return node;
+
+    }
+
+    //private Node
+
+    public int searchForIndex(char [] postorderArr, char toSearch) {
+        for (int i = 0; i < postorderArr.length; ++i) {
+            if (postorderArr[i] == toSearch)
+                return i;
+        }
+        return -1;
+    }
+
 }
 
 public class Source {
     public static Scanner sc = new Scanner(System.in);
+    public static int preoderIndex = 0;
     public static void main(String [] args) {
         /*
         BinaryTree tree = new BinaryTree();
@@ -223,12 +260,27 @@ public class Source {
         System.out.println();
 
          */
+
+        /*
         BinaryTree tree = new BinaryTree();
         for (int i = 0; i < 26; ++i) {
             //System.out.println((char) ('a' +i));
             tree.insert((char) ('a' +i), tree.getRoot(), null, true);
         }
         tree.displayTree(tree.getRoot(), 0);
+         */
+
+        BinaryTree tree = new BinaryTree();
+        char [] preorder = {'A', 'D', 'H', 'L', 'Z', 'P', 'C'};
+        char [] postorder = {'H', 'L', 'D', 'P', 'C','Z','A'};
+        tree.constrctTreePP(preorder, postorder);
+        tree.displayTree(tree.getRoot(), 0);
+
+
+
+
+
+
 
     }
 }
