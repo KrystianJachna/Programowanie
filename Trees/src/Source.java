@@ -50,10 +50,10 @@ class Stack {
 
 class BinaryTree {
     public Node root;
-    private int preorderIndex;
+    private int Index;
 
 
-    public BinaryTree() {root = null; preorderIndex = 0;}
+    public BinaryTree() {root = null; Index = 0;}
 
     public Node getRoot(){ return root;}
 
@@ -188,27 +188,69 @@ class BinaryTree {
 
     public void constrctTreePP(char [] preorderArr, char [] postorderArr) {
         this.root = constructTreePostPree(preorderArr, postorderArr, 0, postorderArr.length - 1);
-        preorderIndex = 0;
+        Index = 0;
     }
 
     private Node constructTreePostPree(char [] preorderArr, char [] postorderArr, int postStart, int postEnd) {
          if (postStart > postEnd)
              return null;
 
-         Node node = new Node(preorderArr[preorderIndex]);
-         ++preorderIndex;
+         Node node = new Node(preorderArr[Index]);
+         ++Index;
 
          if(postStart == postEnd)
              return node;
 
-         int postorderIndex = searchForIndex(postorderArr, preorderArr[preorderIndex]);
+         int postorderIndex = searchForIndex(postorderArr, preorderArr[Index]);
          node.left = constructTreePostPree(preorderArr, postorderArr, postStart, postorderIndex);
          node.right = constructTreePostPree(preorderArr, postorderArr, postorderIndex + 1, postEnd - 1);
          return node;
 
     }
 
-    //private Node
+    public void constrctTreeInPost(char [] preorderArr, char [] inorderArr) {
+        Index = preorderArr.length - 1;
+        this.root = cnostructTreeInPost(preorderArr, inorderArr, 0, preorderArr.length - 1);
+        Index = 0;
+    }
+
+    private Node cnostructTreeInPost(char [] postorderArr, char [] inorderArr, int inStart, int inEnd) {
+        if (inStart > inEnd)
+            return null;
+
+        Node node = new Node(postorderArr[Index]);
+        --Index;
+
+        if (inStart == inEnd)
+            return node;
+
+        int inorderIndex = searchForIndex(inorderArr, node.info);
+        node.left = cnostructTreeInPost(postorderArr, inorderArr, inStart, inorderIndex - 1);
+        node.right = cnostructTreeInPost(postorderArr, inorderArr, inorderIndex + 1, inEnd);
+        return node;
+    }
+
+    public void constructTreeInPre(char [] preorderArr, char [] inorderArr) {
+        Index = 0;
+        this.root =cnostructTreeInPre(preorderArr, inorderArr, 0, preorderArr.length - 1);
+        Index = 0;
+    }
+
+    private Node cnostructTreeInPre(char [] preeorderArr, char [] inorderArr, int inStart, int inEnd) {
+        if (inStart > inEnd)
+            return null;
+
+        Node node = new Node(preeorderArr[Index]);
+        ++Index;
+
+        if (inStart == inEnd)
+            return node;
+
+        int inorderIndex = searchForIndex(inorderArr, node.info);
+        node.left = cnostructTreeInPre(preeorderArr, inorderArr, inStart, inorderIndex - 1);
+        node.right = cnostructTreeInPre(preeorderArr, inorderArr, inorderIndex + 1, inEnd);
+        return node;
+    }
 
     public int searchForIndex(char [] postorderArr, char toSearch) {
         for (int i = 0; i < postorderArr.length; ++i) {
@@ -271,9 +313,10 @@ public class Source {
          */
 
         BinaryTree tree = new BinaryTree();
-        char [] preorder = {'A', 'D', 'H', 'L', 'Z', 'P', 'C'};
-        char [] postorder = {'H', 'L', 'D', 'P', 'C','Z','A'};
-        tree.constrctTreePP(preorder, postorder);
+        //char [] preorder = {'A', 'D', 'H', 'L', 'Z', 'P', 'C'};
+        char [] postorder = {'A', 'B', 'D', 'E', 'C', 'F'};
+        char [] inorder = {'D', 'B', 'E', 'A','F', 'C' };
+        tree.constructTreeInPre(postorder, inorder);
         tree.displayTree(tree.getRoot(), 0);
 
 
