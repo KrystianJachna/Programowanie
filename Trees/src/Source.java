@@ -1,4 +1,5 @@
 // Drzewa
+import java.util.Random;
 import java.util.Scanner;
 class Node {
     public char info;
@@ -158,11 +159,35 @@ class BinaryTree {
             displayTree(p.left, h);
         }
     }
+
+    public void insert(char ch, Node p, Node parent, boolean right) {
+        if (root == null) {
+            root = new Node(ch);
+            return;
+        }
+
+        if (p == null) {
+            p = new Node(ch);
+            if (right)
+                parent.right = p;
+            else
+                parent.left = p;
+        }
+        else {
+            Random rand = new Random();
+            int randInt = rand.nextInt(2);
+            if (randInt == 0)
+                insert(ch, p.right, p, true);
+            else
+                insert(ch, p.left, p, false);
+        }
+    }
 }
 
 public class Source {
     public static Scanner sc = new Scanner(System.in);
     public static void main(String [] args) {
+        /*
         BinaryTree tree = new BinaryTree();
         tree.root = new Node('a');
         tree.root.left = new Node('b');
@@ -196,5 +221,14 @@ public class Source {
         tree.postorderStack();
         System.out.println();
         System.out.println();
+
+         */
+        BinaryTree tree = new BinaryTree();
+        for (int i = 0; i < 26; ++i) {
+            //System.out.println((char) ('a' +i));
+            tree.insert((char) ('a' +i), tree.getRoot(), null, true);
+        }
+        tree.displayTree(tree.getRoot(), 0);
+
     }
 }
