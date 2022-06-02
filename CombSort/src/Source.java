@@ -27,7 +27,7 @@ public class Source {
         int distance = arr.length;
         boolean swapped = true;
 
-        while (distance > 0 && swapped) {
+        while (distance > 1 || swapped) {
             distance = distance * 10/13;
             swapped = false;
             if (distance == 0)
