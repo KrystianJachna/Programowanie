@@ -205,7 +205,6 @@ class BinaryTree {
          node.left = constructTreePostPree(preorderArr, postorderArr, postStart, postorderIndex);
          node.right = constructTreePostPree(preorderArr, postorderArr, postorderIndex + 1, postEnd - 1);
          return node;
-
     }
 
     public void constrctTreeInPost(char [] preorderArr, char [] inorderArr) {
@@ -213,7 +212,6 @@ class BinaryTree {
         this.root = cnostructTreeInPost(preorderArr, inorderArr, 0, preorderArr.length - 1);
         Index = 0;
     }
-
     private Node cnostructTreeInPost(char [] postorderArr, char [] inorderArr, int inStart, int inEnd) {
         if (inStart > inEnd)
             return null;
