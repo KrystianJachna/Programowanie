@@ -10,7 +10,6 @@ class Vertex {
         Wierzcholek grafu
      */
 }
-
 class queueVertex {
     public int VERTEX;
     public queueVertex next;
@@ -26,7 +25,46 @@ class queueVertex {
         cost = 0;
     }
 }
+class Link {
+    public int VERTEX;
+    public Link prev;
 
+    public Link(int VERTEX, Link prev) {
+        this.VERTEX = VERTEX;
+        this.prev = prev;
+    }
+}
+class LinkStack {
+    private Link top;
+
+    public LinkStack() { top = null; }
+
+    public boolean isEmpty() { return (top == null); }
+
+    public void push(int x) {
+        top = new Link(x, top);
+    }
+
+    public int pop() {
+        Link prevTop = top;
+        top = top.prev;
+        return prevTop.VERTEX;
+    }
+
+    public int top() {
+        return top.VERTEX;
+    }
+
+    public boolean isIn(int x) {
+        Link we = top;
+        while (we != null) {
+            if (we.VERTEX == x)
+                return true;
+            we = we.prev;
+        }
+        return false;
+    }
+}
 class Queue {
     private queueVertex front;
     private queueVertex rear;
@@ -80,7 +118,6 @@ class Queue {
         return toRet;
     }
 }
-
 class Graph{
     private int MAX_VERTS = 20;
     private Vertex [] vertexAr;
@@ -100,27 +137,22 @@ class Graph{
         for (int i = 0; i < MAX_VERTS; ++i)
             vertexAr[i] = null;
     }
-
     public void addVertex(char label) {
         vertexAr[num_vert++] = new Vertex(label);
     }
-
     public void addEdge(int start, int end) {
         adjMat[start][end] = 1;
-        adjMat[end][start] = 1;
+        //adjMat[end][start] = 1;
         // dla grafu niezorientowanego
     }
-
     public void displayVertex(int v) {
         System.out.println(vertexAr[v].label);
     }
-
     public void displayEdge(int u, int v) {
         System.out.println("( " + vertexAr[u].label + ", " + vertexAr[v].label + " )" );
         // moze jeszcze sprawdzenie czy taka krawedz jest?
     }
-
-    public void Bfs(int s) {
+    public void BFS(int s) {
         Queue Q = new Queue();
 
         vertexAr[s].wasVisited = true;
@@ -140,7 +172,6 @@ class Graph{
         System.out.println();
         visitReset();
     }
-
     public void findingShortestPathPtoP(int start, int dest) {
         Queue Q = new Queue();
 
@@ -177,11 +208,235 @@ class Graph{
         System.out.println();
         visitReset();
     }
+    public LinkStack DFSfind(int cur, int end, LinkStack st) {
+        st.push(cur);
+        if (cur == end) return st;
+        vertexAr[cur].wasVisited = true;
+        for (int i = 0; i < num_vert; ++i) {
+            if (adjMat[cur][i] == 1 && vertexAr[i].wasVisited == false) {
+                if (DFSfind(i, end, st) != null)
+                    return st;
 
-    private void visitReset() {
+            }
+        }
+        st.pop();
+        return null;
+    }
+    public void DFS(int cur, int starting) {
+        System.out.print(vertexAr[cur].label + ", ");
+        vertexAr[cur].wasVisited = true;
+        for (int i = 0; i < num_vert; ++i) {
+            if (adjMat[cur][i] == 1 && vertexAr[i].wasVisited == false) {
+                DFS(i, starting);
+            }
+        }
+    }
+    public void DFSiter(int start) {
+        LinkStack st = new LinkStack();
+        st.push(start);
+        vertexAr[start].wasVisited = true;
+        //System.out.print(vertexAr[start].label + ", ");//
+
+        while (!st.isEmpty()) {
+            int cur = st.pop();
+            System.out.print(vertexAr[cur].label + ", ");
+
+            for (int i = 0; i <num_vert; ++i) {
+                if (adjMat[cur][i] == 1 && vertexAr[i].wasVisited == false) {
+                    st.push(i);
+                    //System.out.print(vertexAr[i].label + ", ");
+                    vertexAr[i].wasVisited = true;
+                    break;
+                }
+            }
+        }
+        visitReset();
+    }
+    public void DFSminTree(int start) {
+        LinkStack st = new LinkStack();
+        st.push(start);
+        vertexAr[start].wasVisited = true;
+        boolean find = false;
+
+        while(!st.isEmpty()) {
+            int cur = st.top();
+            find = false;
+
+            for (int i = 0; i < num_vert; ++i) {
+                if (adjMat[cur][i] == 1 && vertexAr[i].wasVisited == false) {
+                    displayEdge(cur, i);
+                    vertexAr[i].wasVisited = true;
+                    st.push(i);
+                    find = true;
+                    break;
+                }
+            }
+            if (!find)
+                st.pop();
+        }
+
+    }
+    public void visitReset() {
         for (int i = 0; i < num_vert; ++i)
             vertexAr[i].wasVisited = false;
     }
+    public boolean reachabilityDFS(int start, int end) {
+        LinkStack st = new LinkStack();
+        st.push(start);
+        vertexAr[start].wasVisited = true;
+        boolean found = false;
+
+        while (!st.isEmpty()) {
+            int cur = st.pop();
+            for (int i = 0; i <num_vert; ++i) {
+                if (adjMat[cur][i] == 1 && vertexAr[i].wasVisited == false) {
+                    st.push(i);
+                    vertexAr[i].wasVisited = true;
+                    if (i == end) return true;
+                }
+            }
+        }
+        visitReset();
+        return false;
+    }
+    public boolean reachabilityBFS(int s, int end) {
+        Queue Q = new Queue();
+
+        vertexAr[s].wasVisited = true;
+        Q.add(s, -1, -1);
+
+        while (!Q.isEmpty()) {
+            int cur = Q.delete();
+            //System.out.print(vertexAr[cur].label + ", ");
+
+            for (int i = 0; i < num_vert; ++i) {
+                if (adjMat[cur][i] == 1 && vertexAr[i].wasVisited == false) {
+                    Q.add(i, -1, -1);
+                    vertexAr[i].wasVisited = true;
+                    if (i == end) return true;
+                }
+            }
+        }
+        System.out.println();
+        visitReset();
+        return false;
+    }
+    public int [] coherent_component() {
+        int [] ar = new int[num_vert];
+        int freePlaces = num_vert;
+        int id = 1;
+
+        while(freePlaces > 0) {
+            // szukanie wolnego miejsca
+            int cur = 0;
+            for (cur = 0; cur < num_vert - 1; ++cur)
+                if (ar[cur] == 0)
+                    break;
+
+            LinkStack st = new LinkStack();
+            vertexAr[cur].wasVisited = true;
+            ar[cur] = id;
+            freePlaces--;
+            st.push(cur);
+
+            while (!st.isEmpty()) {
+                cur = st.pop();
+
+                for (int i = 0; i < num_vert; ++i) {
+                    if (adjMat[cur][i] == 1 && vertexAr[i].wasVisited == false) {
+                        vertexAr[i].wasVisited = true;
+                        ar[i] = id;
+                        st.push(i);
+                        freePlaces--;
+                        break;
+                    }
+                }
+            }
+
+            id++;
+        }
+
+        return ar;
+
+    }
+    public boolean hasCycle() {
+
+        int l = 0;
+
+
+        while (l < num_vert) {
+            int cur = l;
+            LinkStack st = new LinkStack();
+            st.push(cur);
+            visitReset();
+            vertexAr[cur].wasVisited = true;
+            boolean found = false;
+
+
+            while (!st.isEmpty()) {
+                cur = st.top();
+                found = false;
+
+                for (int i = 0; i < num_vert; ++i) {
+                    if (vertexAr[i].wasVisited == true && adjMat[cur][i] == 1 && st.isIn(i))
+                        return true;
+                    else if (adjMat[cur][i] == 1 && vertexAr[i].wasVisited == false ) {
+                        st.push(i);
+                        vertexAr[i].wasVisited = true;
+                        found = true;
+                        break;
+                    }
+
+                }
+                if (!found)
+                    st.pop();
+            }
+            l++;
+        }
+        return false;
+    }
+    public char [] topologicalForm() {
+        char [] ordering = new char[num_vert];
+        int n = num_vert;
+        //LinkStack st = new LinkStack();
+
+
+        while (true) {
+            int i = findUnvisited();
+            if (i == -1) break;
+
+            LinkStack st = new LinkStack();
+            vertexAr[i].wasVisited = true;
+            st.push(i);
+
+            while (!st.isEmpty()) {
+                int cur = st.top();
+
+                int next = pickUnvisited(cur);
+                if (next == -1)
+                    ordering[--n] = vertexAr[st.pop()].label;
+                else {
+                    st.push(next);
+                    vertexAr[next].wasVisited = true;
+                }
+            }
+
+        }
+        return ordering;
+    }
+    private int findUnvisited() {
+        for (int i = 0; i < num_vert; ++i)
+            if(vertexAr[i].wasVisited == false)
+                return i;
+        return -1;
+    }
+    private int pickUnvisited(int v) {
+        for (int i = 0; i < num_vert; ++i)
+            if (adjMat[v][i] == 1 && vertexAr[i].wasVisited == false)
+                return i;
+        return -1;
+    }
+
 }
 
 
@@ -202,14 +457,16 @@ public class Source {
         theGraph.addEdge(3,4);
         */
 
-        theGraph.addVertex('A');
-        theGraph.addVertex('B');
-        theGraph.addVertex('C');
-        theGraph.addVertex('D');
-        theGraph.addVertex('F');
-        theGraph.addVertex('G');
-        theGraph.addVertex('H');
-        theGraph.addVertex('J');
+
+
+    /*theGraph.addVertex('A');
+    theGraph.addVertex('B');
+    theGraph.addVertex('C');
+    theGraph.addVertex('D');
+    theGraph.addVertex('F');
+    theGraph.addVertex('G');
+    theGraph.addVertex('H');
+    theGraph.addVertex('J');
 
 
         theGraph.addEdge(0,1);
@@ -218,16 +475,59 @@ public class Source {
         theGraph.addEdge(2,5);
         theGraph.addEdge(2,4);
         theGraph.addEdge(3,5);
+        theGraph.addEdge(3,1);
         theGraph.addEdge(3,6);
-        theGraph.addEdge(6,7);
         theGraph.addEdge(4,7);
         theGraph.addEdge(5,7);
+        theGraph.addEdge(6,7);
+
+
+        theGraph.DFSiter(0);
+
+
+        //theGraph.DFSminTree(0);
+        //for (int i = 0; i <= 7; ++i) {
+            //System.out.println(theGraph.reachabilityBFS(0, 3));
+           // theGraph.visitReset();
+        //}
+*/
+        theGraph.addVertex('A');
+        theGraph.addVertex('B');
+        theGraph.addVertex('C');
+        theGraph.addVertex('D');
+        theGraph.addVertex('E');
+        theGraph.addVertex('F');
+        theGraph.addVertex('G');
+        theGraph.addVertex('H');
+
+/*
+        theGraph.addEdge(0,4);
+        theGraph.addEdge(8,4);
+        theGraph.addEdge(8,7);
+        theGraph.addEdge(4,7);
+        theGraph.addEdge(1,6);
+        theGraph.addEdge(5,6);
+        theGraph.addEdge(3,2);
+        theGraph.addEdge(9,2);
+        theGraph.addEdge(9,3);
+*/
+        theGraph.addEdge(0,2);
+        theGraph.addEdge(0,1);
+        theGraph.addEdge(1,2);
+        theGraph.addEdge(1,3);
+        theGraph.addEdge(1,3);
+        theGraph.addEdge(4,3);
+        theGraph.addEdge(5,6);
+        theGraph.addEdge(5,7);
+        theGraph.addEdge(6,3);
+        theGraph.addEdge(7,6);
 
 
 
-
-
-        System.out.print("Odwiedzone wierzcholki: ");
-        theGraph.findingShortestPathPtoP(1, 7);
+        //theGraph.addEdge(5,3);
+        char [] ar = theGraph.topologicalForm();
+        for (int i = 0; i < ar.length; ++i) {
+            System.out.print(ar[i] + ", ");
+        }
     }
 }
